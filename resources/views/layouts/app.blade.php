@@ -44,9 +44,18 @@
                 </div>
                 
                 <div class="flex items-center">
+                    <!-- Usuario actual -->
+                    <span class="text-gray-600 px-3 py-2 text-sm">
+                        <i class="fas fa-user-circle mr-1"></i> {{ Auth::user()->name }}
+                        @if(Auth::user()->isAdmin())
+                            <span class="ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded">Admin</span>
+                        @endif
+                    </span>
+                    
                     <a href="{{ route('home') }}" target="_blank" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
                         <i class="fas fa-external-link-alt mr-1"></i> Ver Sitio
                     </a>
+                    
                     <form method="POST" action="{{ route('logout') }}" class="ml-3">
                         @csrf
                         <button type="submit" class="bg-gray-800 text-white hover:bg-gray-700 px-4 py-2 rounded-md text-sm font-medium">

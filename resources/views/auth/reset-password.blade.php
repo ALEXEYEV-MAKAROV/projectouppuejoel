@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesión - RegeneraMyPE</title>
+    <title>Restablecer Contraseña - RegeneraMyPE</title>
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/maicons.css') }}">
     <style>
@@ -14,53 +14,61 @@
             align-items: center;
             justify-content: center;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 30px 0;
         }
-        .login-container {
+        .reset-container {
             max-width: 450px;
             width: 100%;
             padding: 20px;
         }
-        .login-card {
+        .reset-card {
             background: white;
             border-radius: 15px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.2);
             overflow: hidden;
         }
-        .login-header {
+        .reset-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 30px;
             text-align: center;
         }
-        .login-header img {
+        .reset-header .icon-circle {
             width: 80px;
             height: 80px;
-            margin-bottom: 15px;
             background: white;
-            padding: 10px;
             border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
         }
-        .login-header h2 {
+        .reset-header .icon-circle span {
+            font-size: 40px;
+            color: #667eea;
+        }
+        .reset-header h2 {
             margin: 0;
             font-size: 24px;
             font-weight: 600;
         }
-        .login-header p {
-            margin: 5px 0 0 0;
+        .reset-header p {
+            margin: 10px 0 0 0;
             opacity: 0.9;
             font-size: 14px;
         }
-        .login-body {
+        .reset-body {
             padding: 40px 30px;
         }
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
         .form-group label {
             font-weight: 600;
             color: #333;
             margin-bottom: 8px;
             display: block;
+            font-size: 14px;
         }
         .form-control {
             height: 50px;
@@ -91,7 +99,7 @@
         .input-group .form-control {
             padding-left: 45px;
         }
-        .btn-login {
+        .btn-reset {
             width: 100%;
             height: 50px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -102,42 +110,23 @@
             font-weight: 600;
             transition: all 0.3s;
             cursor: pointer;
+            margin-top: 10px;
         }
-        .btn-login:hover {
+        .btn-reset:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
         }
-        .custom-checkbox {
-            display: flex;
-            align-items: center;
-        }
-        .custom-checkbox input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            margin-right: 8px;
-            cursor: pointer;
-        }
-        .forgot-password {
-            color: #667eea;
-            text-decoration: none;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-        .forgot-password:hover {
-            color: #764ba2;
-            text-decoration: underline;
-        }
-        .login-footer {
+        .reset-footer {
             text-align: center;
             padding: 20px;
             background: #f8f9fa;
         }
-        .login-footer a {
+        .reset-footer a {
             color: #667eea;
             text-decoration: none;
             font-weight: 600;
         }
-        .login-footer a:hover {
+        .reset-footer a:hover {
             text-decoration: underline;
         }
         .alert {
@@ -148,27 +137,26 @@
             font-size: 13px;
             margin-top: 5px;
         }
+        .password-hint {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
 
-<div class="login-container">
-    <div class="login-card">
-        <div class="login-header">
-            <img src="{{ asset('assets/img/icons/logo.png') }}" alt="RegeneraMyPE">
-            <h2>Regenera<span style="font-weight: 300;">MyPE</span></h2>
-            <p>Panel de Administración</p>
+<div class="reset-container">
+    <div class="reset-card">
+        <div class="reset-header">
+            <div class="icon-circle">
+                <span class="mai-lock"></span>
+            </div>
+            <h2>Restablecer Contraseña</h2>
+            <p>Ingresa tu nueva contraseña</p>
         </div>
 
-        <div class="login-body">
-            <!-- Mensajes de éxito -->
-            @if (session('success'))
-                <div class="alert alert-success alert-dismissible fade show">
-                    <span class="mai-checkmark-circle"></span> {{ session('success') }}
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                </div>
-            @endif
-
+        <div class="reset-body">
             <!-- Mensajes de error -->
             @if ($errors->any())
                 <div class="alert alert-danger alert-dismissible fade show">
@@ -182,8 +170,11 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('login') }}">
+            <form method="POST" action="{{ route('password.update') }}">
                 @csrf
+
+                <!-- Token oculto -->
+                <input type="hidden" name="token" value="{{ $token }}">
 
                 <!-- Email -->
                 <div class="form-group">
@@ -196,7 +187,7 @@
                                name="email" 
                                id="email" 
                                class="form-control @error('email') is-invalid @enderror" 
-                               value="{{ old('email') }}" 
+                               value="{{ $email ?? old('email') }}" 
                                placeholder="tu@email.com"
                                required 
                                autofocus>
@@ -206,10 +197,10 @@
                     </div>
                 </div>
 
-                <!-- Password -->
+                <!-- Nueva Contraseña -->
                 <div class="form-group">
                     <label for="password">
-                        <span class="mai-lock"></span> Contraseña
+                        <span class="mai-lock"></span> Nueva Contraseña
                     </label>
                     <div class="input-group">
                         <span class="input-group-icon mai-lock"></span>
@@ -223,30 +214,36 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
+                    <small class="password-hint">Mínimo 8 caracteres</small>
                 </div>
 
-                <!-- Remember & Forgot -->
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div class="custom-checkbox">
-                        <input type="checkbox" name="remember" id="remember">
-                        <label for="remember" class="mb-0" style="cursor: pointer;">Recordarme</label>
+                <!-- Confirmar Contraseña -->
+                <div class="form-group">
+                    <label for="password_confirmation">
+                        <span class="mai-lock"></span> Confirmar Contraseña
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-icon mai-lock"></span>
+                        <input type="password" 
+                               name="password_confirmation" 
+                               id="password_confirmation" 
+                               class="form-control" 
+                               placeholder="••••••••"
+                               required>
                     </div>
-                    <a href="{{ route('password.request') }}" class="forgot-password">
-                        ¿Olvidaste tu contraseña?
-                    </a>
                 </div>
 
                 <!-- Submit -->
-                <button type="submit" class="btn btn-login">
-                    <span class="mai-log-in"></span> Iniciar Sesión
+                <button type="submit" class="btn btn-reset">
+                    <span class="mai-checkmark"></span> Restablecer Contraseña
                 </button>
             </form>
         </div>
 
-        <div class="login-footer">
+        <div class="reset-footer">
             <p class="mb-0">
-                <a href="{{ route('home') }}">
-                    <span class="mai-arrow-back"></span> Volver al sitio web
+                <a href="{{ route('login') }}">
+                    <span class="mai-arrow-back"></span> Volver al inicio de sesión
                 </a>
             </p>
         </div>

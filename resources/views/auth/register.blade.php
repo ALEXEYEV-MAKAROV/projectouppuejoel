@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesión - RegeneraMyPE</title>
+    <title>Registro - RegeneraMyPE</title>
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/maicons.css') }}">
     <style>
@@ -14,67 +14,69 @@
             align-items: center;
             justify-content: center;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 30px 0;
         }
-        .login-container {
-            max-width: 450px;
+        .register-container {
+            max-width: 500px;
             width: 100%;
             padding: 20px;
         }
-        .login-card {
+        .register-card {
             background: white;
             border-radius: 15px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.2);
             overflow: hidden;
         }
-        .login-header {
+        .register-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 30px;
             text-align: center;
         }
-        .login-header img {
-            width: 80px;
-            height: 80px;
-            margin-bottom: 15px;
+        .register-header img {
+            width: 70px;
+            height: 70px;
+            margin-bottom: 12px;
             background: white;
-            padding: 10px;
+            padding: 8px;
             border-radius: 50%;
         }
-        .login-header h2 {
+        .register-header h2 {
             margin: 0;
             font-size: 24px;
             font-weight: 600;
         }
-        .login-header p {
+        .register-header p {
             margin: 5px 0 0 0;
             opacity: 0.9;
             font-size: 14px;
         }
-        .login-body {
-            padding: 40px 30px;
+        .register-body {
+            padding: 35px 30px;
         }
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
         .form-group label {
             font-weight: 600;
             color: #333;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             display: block;
+            font-size: 14px;
         }
-        .form-control {
-            height: 50px;
+        .form-control, .form-select {
+            height: 48px;
             border-radius: 8px;
             border: 2px solid #e0e0e0;
             padding: 10px 15px;
             font-size: 15px;
             transition: all 0.3s;
         }
-        .form-control:focus {
+        .form-control:focus, .form-select:focus {
             border-color: #667eea;
             box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
         }
-        .form-control.is-invalid {
+        .form-control.is-invalid, .form-select.is-invalid {
             border-color: #dc3545;
         }
         .input-group {
@@ -88,10 +90,10 @@
             color: #999;
             font-size: 18px;
         }
-        .input-group .form-control {
+        .input-group .form-control, .input-group .form-select {
             padding-left: 45px;
         }
-        .btn-login {
+        .btn-register {
             width: 100%;
             height: 50px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -102,42 +104,23 @@
             font-weight: 600;
             transition: all 0.3s;
             cursor: pointer;
+            margin-top: 10px;
         }
-        .btn-login:hover {
+        .btn-register:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
         }
-        .custom-checkbox {
-            display: flex;
-            align-items: center;
-        }
-        .custom-checkbox input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            margin-right: 8px;
-            cursor: pointer;
-        }
-        .forgot-password {
-            color: #667eea;
-            text-decoration: none;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-        .forgot-password:hover {
-            color: #764ba2;
-            text-decoration: underline;
-        }
-        .login-footer {
+        .register-footer {
             text-align: center;
             padding: 20px;
             background: #f8f9fa;
         }
-        .login-footer a {
+        .register-footer a {
             color: #667eea;
             text-decoration: none;
             font-weight: 600;
         }
-        .login-footer a:hover {
+        .register-footer a:hover {
             text-decoration: underline;
         }
         .alert {
@@ -148,27 +131,24 @@
             font-size: 13px;
             margin-top: 5px;
         }
+        .password-hint {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
 
-<div class="login-container">
-    <div class="login-card">
-        <div class="login-header">
+<div class="register-container">
+    <div class="register-card">
+        <div class="register-header">
             <img src="{{ asset('assets/img/icons/logo.png') }}" alt="RegeneraMyPE">
             <h2>Regenera<span style="font-weight: 300;">MyPE</span></h2>
-            <p>Panel de Administración</p>
+            <p>Crear Cuenta Nueva</p>
         </div>
 
-        <div class="login-body">
-            <!-- Mensajes de éxito -->
-            @if (session('success'))
-                <div class="alert alert-success alert-dismissible fade show">
-                    <span class="mai-checkmark-circle"></span> {{ session('success') }}
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                </div>
-            @endif
-
+        <div class="register-body">
             <!-- Mensajes de error -->
             @if ($errors->any())
                 <div class="alert alert-danger alert-dismissible fade show">
@@ -182,8 +162,29 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('login') }}">
+            <form method="POST" action="{{ route('register') }}">
                 @csrf
+
+                <!-- Nombre -->
+                <div class="form-group">
+                    <label for="name">
+                        <span class="mai-person"></span> Nombre Completo
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-icon mai-person"></span>
+                        <input type="text" 
+                               name="name" 
+                               id="name" 
+                               class="form-control @error('name') is-invalid @enderror" 
+                               value="{{ old('name') }}" 
+                               placeholder="Juan Pérez"
+                               required 
+                               autofocus>
+                        @error('name')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
 
                 <!-- Email -->
                 <div class="form-group">
@@ -198,9 +199,29 @@
                                class="form-control @error('email') is-invalid @enderror" 
                                value="{{ old('email') }}" 
                                placeholder="tu@email.com"
-                               required 
-                               autofocus>
+                               required>
                         @error('email')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
+                <!-- Rol -->
+                <div class="form-group">
+                    <label for="role">
+                        <span class="mai-shield"></span> Rol
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-icon mai-shield"></span>
+                        <select name="role" 
+                                id="role" 
+                                class="form-control @error('role') is-invalid @enderror" 
+                                required>
+                            <option value="">Seleccionar rol...</option>
+                            <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Administrador</option>
+                            <option value="auxiliar" {{ old('role') == 'auxiliar' ? 'selected' : '' }}>Auxiliar</option>
+                        </select>
+                        @error('role')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
@@ -223,28 +244,38 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
+                    <small class="password-hint">Mínimo 8 caracteres</small>
                 </div>
 
-                <!-- Remember & Forgot -->
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div class="custom-checkbox">
-                        <input type="checkbox" name="remember" id="remember">
-                        <label for="remember" class="mb-0" style="cursor: pointer;">Recordarme</label>
+                <!-- Confirm Password -->
+                <div class="form-group">
+                    <label for="password_confirmation">
+                        <span class="mai-lock"></span> Confirmar Contraseña
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-icon mai-lock"></span>
+                        <input type="password" 
+                               name="password_confirmation" 
+                               id="password_confirmation" 
+                               class="form-control" 
+                               placeholder="••••••••"
+                               required>
                     </div>
-                    <a href="{{ route('password.request') }}" class="forgot-password">
-                        ¿Olvidaste tu contraseña?
-                    </a>
                 </div>
 
                 <!-- Submit -->
-                <button type="submit" class="btn btn-login">
-                    <span class="mai-log-in"></span> Iniciar Sesión
+                <button type="submit" class="btn btn-register">
+                    <span class="mai-person-add"></span> Crear Cuenta
                 </button>
             </form>
         </div>
 
-        <div class="login-footer">
+        <div class="register-footer">
             <p class="mb-0">
+                ¿Ya tienes cuenta? 
+                <a href="{{ route('login') }}">Iniciar Sesión</a>
+            </p>
+            <p class="mt-2 mb-0">
                 <a href="{{ route('home') }}">
                     <span class="mai-arrow-back"></span> Volver al sitio web
                 </a>
