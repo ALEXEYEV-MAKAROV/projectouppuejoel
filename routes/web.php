@@ -8,6 +8,11 @@ use App\Http\Controllers\Admin\TeamMemberController;
 use App\Http\Controllers\Admin\PublicationController;
 use App\Http\Controllers\Admin\InterestTopicController;
 
+// Controladores de Autenticación
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\PasswordResetController;
+
 /*
 |--------------------------------------------------------------------------
 | RUTAS PÚBLICAS
@@ -54,6 +59,48 @@ Route::get('/team/{slug}', function ($slug) {
     return view('perfiles.show', compact('member'));
 })->name('team.show');
 
+/*
+|--------------------------------------------------------------------------
+| RUTAS DE AUTENTICACIÓN
+|--------------------------------------------------------------------------
+*/
+
+// Login
+Route::get('/login', [LoginController::class, 'showLoginForm'])
+    ->name('login')
+    ->middleware('guest');
+
+Route::post('/login', [LoginController::class, 'login'])
+    ->middleware('guest');
+
+Route::post('/logout', [LoginController::class, 'logout'])
+    ->name('logout')
+    ->middleware('auth');
+
+// Registro
+Route::get('/register', [RegisterController::class, 'showRegistrationForm'])
+    ->name('register')
+    ->middleware('guest');
+
+Route::post('/register', [RegisterController::class, 'register'])
+    ->middleware('guest');
+
+// Recuperación de contraseña
+Route::get('/forgot-password', [PasswordResetController::class, 'showLinkRequestForm'])
+    ->name('password.request')
+    ->middleware('guest');
+
+Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLinkEmail'])
+    ->name('password.email')
+    ->middleware('guest');
+
+Route::get('/reset-password/{token}', [PasswordResetController::class, 'showResetForm'])
+    ->name('password.reset')
+    ->middleware('guest');
+
+Route::post('/reset-password', [PasswordResetController::class, 'reset'])
+    ->name('password.update')
+    ->middleware('guest');
 
 /*
 |--------------------------------------------------------------------------
@@ -63,22 +110,19 @@ Route::get('/team/{slug}', function ($slug) {
 Route::get('/dashboard', function () {
     $user = Auth::user();
     
-    if ($user->role === 'admin') {
-        return redirect()->route('admin.team.index');
-    } elseif ($user->role === 'auxiliar') {
+    if ($user->role === 'admin' || $user->role === 'auxiliar') {
         return redirect()->route('admin.team.index');
     }
     
     return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
+})->middleware(['auth'])->name('dashboard');
 
 /*
 |--------------------------------------------------------------------------
 | PANEL ADMIN (requiere autenticación)
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     
     // CRUD Team Members
     Route::get('team', [TeamMemberController::class, 'index'])->name('team.index');
@@ -103,13 +147,4 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::get('topics/{id}/edit', [InterestTopicController::class, 'edit'])->name('topics.edit');
     Route::put('topics/{id}', [InterestTopicController::class, 'update'])->name('topics.update');
     Route::delete('topics/{id}', [InterestTopicController::class, 'destroy'])->name('topics.destroy');
-    
 });
-
-
-/*
-|--------------------------------------------------------------------------
-| AUTENTICACIÓN
-|--------------------------------------------------------------------------
-*/
-require __DIR__.'/auth.php';

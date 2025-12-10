@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesión - RegeneraMyPE</title>
+    <title>Recuperar Contraseña - RegeneraMyPE</title>
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/maicons.css') }}">
     <style>
@@ -15,43 +15,56 @@
             justify-content: center;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        .login-container {
+        .forgot-container {
             max-width: 450px;
             width: 100%;
             padding: 20px;
         }
-        .login-card {
+        .forgot-card {
             background: white;
             border-radius: 15px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.2);
             overflow: hidden;
         }
-        .login-header {
+        .forgot-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 30px;
             text-align: center;
         }
-        .login-header img {
+        .forgot-header .icon-circle {
             width: 80px;
             height: 80px;
-            margin-bottom: 15px;
             background: white;
-            padding: 10px;
             border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
         }
-        .login-header h2 {
+        .forgot-header .icon-circle span {
+            font-size: 40px;
+            color: #667eea;
+        }
+        .forgot-header h2 {
             margin: 0;
             font-size: 24px;
             font-weight: 600;
         }
-        .login-header p {
-            margin: 5px 0 0 0;
+        .forgot-header p {
+            margin: 10px 0 0 0;
             opacity: 0.9;
             font-size: 14px;
         }
-        .login-body {
+        .forgot-body {
             padding: 40px 30px;
+        }
+        .info-text {
+            text-align: center;
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 14px;
+            line-height: 1.6;
         }
         .form-group {
             margin-bottom: 25px;
@@ -91,7 +104,7 @@
         .input-group .form-control {
             padding-left: 45px;
         }
-        .btn-login {
+        .btn-send {
             width: 100%;
             height: 50px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -103,41 +116,21 @@
             transition: all 0.3s;
             cursor: pointer;
         }
-        .btn-login:hover {
+        .btn-send:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
         }
-        .custom-checkbox {
-            display: flex;
-            align-items: center;
-        }
-        .custom-checkbox input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            margin-right: 8px;
-            cursor: pointer;
-        }
-        .forgot-password {
-            color: #667eea;
-            text-decoration: none;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-        .forgot-password:hover {
-            color: #764ba2;
-            text-decoration: underline;
-        }
-        .login-footer {
+        .forgot-footer {
             text-align: center;
             padding: 20px;
             background: #f8f9fa;
         }
-        .login-footer a {
+        .forgot-footer a {
             color: #667eea;
             text-decoration: none;
             font-weight: 600;
         }
-        .login-footer a:hover {
+        .forgot-footer a:hover {
             text-decoration: underline;
         }
         .alert {
@@ -152,15 +145,21 @@
 </head>
 <body>
 
-<div class="login-container">
-    <div class="login-card">
-        <div class="login-header">
-            <img src="{{ asset('assets/img/icons/logo.png') }}" alt="RegeneraMyPE">
-            <h2>Regenera<span style="font-weight: 300;">MyPE</span></h2>
-            <p>Panel de Administración</p>
+<div class="forgot-container">
+    <div class="forgot-card">
+        <div class="forgot-header">
+            <div class="icon-circle">
+                <span class="mai-key"></span>
+            </div>
+            <h2>¿Olvidaste tu contraseña?</h2>
+            <p>No te preocupes, te ayudaremos</p>
         </div>
 
-        <div class="login-body">
+        <div class="forgot-body">
+            <p class="info-text">
+                Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.
+            </p>
+
             <!-- Mensajes de éxito -->
             @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show">
@@ -182,7 +181,7 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('login') }}">
+            <form method="POST" action="{{ route('password.email') }}">
                 @csrf
 
                 <!-- Email -->
@@ -206,47 +205,17 @@
                     </div>
                 </div>
 
-                <!-- Password -->
-                <div class="form-group">
-                    <label for="password">
-                        <span class="mai-lock"></span> Contraseña
-                    </label>
-                    <div class="input-group">
-                        <span class="input-group-icon mai-lock"></span>
-                        <input type="password" 
-                               name="password" 
-                               id="password" 
-                               class="form-control @error('password') is-invalid @enderror" 
-                               placeholder="••••••••"
-                               required>
-                        @error('password')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                </div>
-
-                <!-- Remember & Forgot -->
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div class="custom-checkbox">
-                        <input type="checkbox" name="remember" id="remember">
-                        <label for="remember" class="mb-0" style="cursor: pointer;">Recordarme</label>
-                    </div>
-                    <a href="{{ route('password.request') }}" class="forgot-password">
-                        ¿Olvidaste tu contraseña?
-                    </a>
-                </div>
-
                 <!-- Submit -->
-                <button type="submit" class="btn btn-login">
-                    <span class="mai-log-in"></span> Iniciar Sesión
+                <button type="submit" class="btn btn-send">
+                    <span class="mai-send"></span> Enviar Enlace de Recuperación
                 </button>
             </form>
         </div>
 
-        <div class="login-footer">
+        <div class="forgot-footer">
             <p class="mb-0">
-                <a href="{{ route('home') }}">
-                    <span class="mai-arrow-back"></span> Volver al sitio web
+                <a href="{{ route('login') }}">
+                    <span class="mai-arrow-back"></span> Volver al inicio de sesión
                 </a>
             </p>
         </div>
